@@ -1,13 +1,7 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, ScrollView, View} from 'react-native';
+import {MMKV} from 'react-native-mmkv';
+
 import Heading from './components/Heading';
 import Input from './components/Input';
 import SubmitButton from './components/SubmitButton';
@@ -21,6 +15,20 @@ const App: () => React$Node = () => {
   const [todos, setTodos] = useState([]);
   const [type, setType] = useState('All');
 
+  useEffect(() => {
+    const keys = MMKV.getAllKeys();
+    todoIndex = keys.length;
+    if (keys.length > 0) {
+      const dbTodos = [];
+      for (let i = 0; i < keys.length; i++) {
+        const jsonTodo = MMKV.getString(keys[i]);
+        const objectTodo = JSON.parse(jsonTodo);
+        dbTodos.push(objectTodo);
+      }
+      setTodos(dbTodos);
+    }
+  }, []);
+
   const submitTodo = () => {
     if (inputValue.match(/^\s*$/)) {
       return;
@@ -30,15 +38,17 @@ const App: () => React$Node = () => {
       todoIndex,
       complete: false,
     };
-    todoIndex++;
     setTodos([...todos, todo]);
+    MMKV.set(todoIndex.toString(), JSON.stringify(todo));
     setInputValue('');
+    todoIndex++;
   };
 
   const deleteTodo = (index) => {
     let tempTodos = [...todos];
     tempTodos = tempTodos.filter((todo) => todo.todoIndex !== index);
     setTodos(tempTodos);
+    MMKV.delete(index.toString());
   };
 
   const toggleComplete = (index) => {
@@ -49,6 +59,11 @@ const App: () => React$Node = () => {
       }
     });
     setTodos(tempTodos);
+    const jsonTodo = MMKV.getString(index.toString());
+    const objectTodo = JSON.parse(jsonTodo);
+
+    objectTodo.complete = !objectTodo.complete;
+    MMKV.set(index.toString(), JSON.stringify(objectTodo));
   };
 
   return (
@@ -59,13 +74,13 @@ const App: () => React$Node = () => {
           inputValue={inputValue}
           inputChange={(text) => setInputValue(text)}
         />
+        <SubmitButton submitTodo={submitTodo} />
         <TaskList
           type={type}
           toggleComplete={toggleComplete}
           deleteTodo={deleteTodo}
           todos={todos}
         />
-        <SubmitButton submitTodo={submitTodo} />
       </ScrollView>
       <TabBar type={type} setType={setType} />
     </View>

@@ -5,7 +5,13 @@ import TaskButton from './TaskButton';
 const Task = ({todo, toggleComplete, deleteTodo}) => {
   return (
     <View style={styles.todoContainer}>
-      <Text style={styles.todoText}>{todo.title}</Text>
+      <Text
+        style={[
+          styles.todoText,
+          todo.complete ? styles.todoCompleteText : null,
+        ]}>
+        {todo.title}
+      </Text>
       <View style={styles.buttons}>
         <TaskButton
           name="Done"
@@ -39,6 +45,9 @@ const styles = StyleSheet.create({
   },
   todoText: {
     fontSize: 17,
+  },
+  todoCompleteText: {
+    textDecorationLine: 'line-through',
   },
   buttons: {
     flex: 1,

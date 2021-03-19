@@ -4,19 +4,19 @@ import {StyleSheet, Text, View} from 'react-native';
 const Heading = () => {
   return (
     <View style={styles.header}>
-      <Text style={styles.headerText}>todos</Text>
+      <Text style={styles.headerText}>things 2 do</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   header: {
-    marginTop: 60,
+    marginBottom: 60,
   },
   headerText: {
     textAlign: 'center',
-    fontSize: 72,
-    color: 'rgba(175, 47, 47, 0.25)',
+    fontSize: 56,
+    color: 'rgb(81,175,47)',
     fontWeight: '100',
   },
 });
